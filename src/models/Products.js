@@ -1,5 +1,5 @@
 import request from "../utils/request";
-import {notification} from 'antd';
+import {message, notification} from 'antd';
 
 /**
  * 查询
@@ -70,6 +70,23 @@ async function deleteProduct(param) {
   }));
 }
 
+async function uploadWord(param) {
+  return new Promise((resolve,reject) => {
+    let url = `http://127.0.0.1:8080/user/delete`;
+    request(url,{
+      method: "POST",
+      model:"no-cors",
+      withCredentials: false,
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body:`id=${param.id}`
+    }).then(res=>{
+      resolve(res.data);
+    });
+  })
+}
+
 export default {
 
   namespace: 'products',
@@ -105,6 +122,7 @@ export default {
     * deleteProduct({payload}, {select,call, put}){
       let data = yield call(deleteProduct,payload);
       if(data.success){
+        message.success(`删除 id:${payload.id} 成功`);
         yield put({
           type:'queryProducts'
         })
@@ -115,7 +133,12 @@ export default {
             '删除失败',
         });
       }
-    }
+    },
+
+    * uploadWord({payload}, {select,call, put}) {
+      // let data = yield call(uploadWord,payload);
+     console.log('sxl:',payload)
+    },
   },
 
   reducers: {

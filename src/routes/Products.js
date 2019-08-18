@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'dva';
-import {Table, Divider, Button, Card,Popconfirm,Form,Input,Icon,Modal} from 'antd';
+import {Button, Card, Divider, Form, Icon, Input, message, Modal, Popconfirm, Table, Upload} from 'antd';
 import FormItem from "antd/es/form/FormItem";
 // const Products = (props) => (
 //   <h2>List of Products</h2>
@@ -14,6 +14,14 @@ class Products extends React.Component {
   render() {
     const productsList = this.props.productsList;
     const dispatch = this.props.dispatch;
+    /**
+     *  后端地址：  http://127.0.0.1:8080/user/uploadWord
+     *  请求头：headers: {
+                          authorization: 'authorization-text',
+                          'Content-Type': 'multipart/form-data',
+                        }
+     */
+
     //定义表头，一般放在render()中
     const columns = [
       {
@@ -55,6 +63,12 @@ class Products extends React.Component {
           <Button type="primary" onClick={this.showModal}>
             新增用户
           </Button>
+          {/* 渲染文件上传组件 */}
+          <Upload {...this.getPdfURL()} showUploadList={true}>
+            <Button>
+              <Icon type="upload" /> 上传文件
+            </Button>
+          </Upload>
           <Table columns={columns} dataSource={productsList} rowKey={card => card.id}/>
         </Card>
         <Modal
@@ -63,48 +77,73 @@ class Products extends React.Component {
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          <Form  layout="inline">
+          <Form layout="inline">
             <FormItem>
-                <Input
-                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="Username"
-                />
+              <Input
+                prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                placeholder="Username"
+              />
             </FormItem>
           </Form>
         </Modal>
       </div>
     )
   }
-  deleteProduct(id){
+
+  deleteProduct(id) {
     this.props.dispatch({
-      type:'products/deleteProduct',
-      payload:{
-        id:id
+      type: 'products/deleteProduct',
+      payload: {
+        id: id
       }
     });
   }
+
   showModal = () => {
     this.props.dispatch({
-      type:'products/changeValue',
-      payload:{
+      type: 'products/changeValue',
+      payload: {
         addVisible: true
       }
     });
   };
   handleCancel = e => {
     this.props.dispatch({
-      type:'products/changeValue',
-      payload:{
+      type: 'products/changeValue',
+      payload: {
         addVisible: false
       }
     });
   };
+
+  //此方法是点击上传按钮，选择后即可上传
+  getPdfURL = () =>{
+    const props = {
+      name: 'file',
+      action: 'http://127.0.0.1:8080/user/uploadWord',
+    // accept:"application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    headers: {
+      authorization: 'authorization-text',
+    },
+    onChange(info) {//上传文件改变时的状态
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} 上传成功！`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} 上传失败！`);
+      }
+    },
+  };
+    return props;
+  }
 }
 
 function mapStateToProps(state) {
   return {
     productsList: state.products.productsList,
-    addVisible:state.products.addVisible,
+    addVisible: state.products.addVisible,
   }
 }
 
