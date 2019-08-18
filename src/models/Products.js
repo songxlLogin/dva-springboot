@@ -1,6 +1,7 @@
 import request from "../utils/request";
 import {message, notification} from 'antd';
 
+// import reqwest from 'reqwest';
 /**
  * 查询
  * @param param
@@ -70,6 +71,11 @@ async function deleteProduct(param) {
   }));
 }
 
+/**
+ * 测试文件上传（只有文件）
+ * @param param
+ * @returns {Promise<*>}
+ */
 async function uploadWord(param) {
   return new Promise((resolve,reject) => {
     let url = `http://127.0.0.1:8080/user/delete`;
@@ -81,6 +87,28 @@ async function uploadWord(param) {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body:`id=${param.id}`
+    }).then(res=>{
+      resolve(res.data);
+    });
+  })
+}
+
+/**
+ * 包含文件上传的form表单提交
+ * @param param
+ * @returns {Promise<*>}
+ */
+async function mockAddUser(param) {
+  return new Promise((resolve,reject) => {
+    let url = `http://127.0.0.1:8080/user/mockAddUser`;
+    request(url,{
+      method: "POST",
+      model:"no-cors",
+      withCredentials: false,
+      headers:{
+        credentials: 'same-origin'
+      },
+      body:param
     }).then(res=>{
       resolve(res.data);
     });
@@ -137,8 +165,16 @@ export default {
 
     * uploadWord({payload}, {select,call, put}) {
       // let data = yield call(uploadWord,payload);
-     console.log('sxl:',payload)
     },
+
+    * mockAddUser({payload},{select,call,put}){
+      let data = yield call(mockAddUser,payload);
+      if(data.success){
+        message.success("新增成功。");
+      }else{
+        message.error("新增失败。");
+      }
+    }
   },
 
   reducers: {
