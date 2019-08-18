@@ -24,6 +24,7 @@ app.use(createLoading());
 
 // 3. Model
 app.model(require('../models/example').default);
+app.model(require('../models/Products').default);
 // 4. Router
 app.router(require('../routers/router').default);
 // 5. Start
