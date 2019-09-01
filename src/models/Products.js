@@ -103,11 +103,11 @@ async function mockAddUser(param) {
     let url = `http://127.0.0.1:8080/user/mockAddUser`;
     request(url,{
       method: "POST",
-      model:"no-cors",
-      withCredentials: false,
-      headers:{
-        credentials: 'same-origin'
-      },
+      // model:"no-cors",
+      // withCredentials: false,
+      // headers:{
+      //   credentials: 'same-origin'
+      // },
       body:param
     }).then(res=>{
       resolve(res.data);
@@ -115,6 +115,40 @@ async function mockAddUser(param) {
   })
 }
 
+async function checkboxSingle(param) {
+  let formData = new FormData();
+  //todo: 如果在Formdata中存数组，为什么发送数组后端接收到的是：1，sxl
+  // formData.append("name",['1','sxl']);
+  formData.append("name","sxl");
+  return new Promise(resolve => {
+    let url = 'http://127.0.0.1:8080/checkbox/single';
+    request(url,{
+      method:'POST',
+      model:"no-cors",
+      withCredentials: false,
+      body:formData
+    }).then(res=>{
+      resolve(res);
+    });
+  })
+}
+
+async function checkboxMultiply(param) {
+  let formData = new FormData();
+  formData.append("name","lis");
+  formData.append("name","sxl");
+  return new Promise(resolve => {
+    let url = 'http://127.0.0.1:8080/checkbox/multiply';
+    request(url,{
+      method:'POST',
+      model:"no-cors",
+      withCredentials: false,
+      body:formData
+    }).then(res=>{
+      resolve(res);
+    });
+  })
+}
 export default {
 
   namespace: 'products',
@@ -131,12 +165,16 @@ export default {
           dispatch({
             type: 'queryProducts',
           });
+          dispatch({
+            type:'checkboxSingle'
+          })
         }
       });
     },
   },
 
   effects: {
+    //查询
     * queryProducts({payload}, {select,call, put}) {
       let data = yield call(queryProducts,payload);
       yield put({
@@ -167,6 +205,7 @@ export default {
       // let data = yield call(uploadWord,payload);
     },
 
+    //文件上传
     * mockAddUser({payload},{select,call,put}){
       let data = yield call(mockAddUser,payload);
       if(data.success){
@@ -174,6 +213,16 @@ export default {
       }else{
         message.error("新增失败。");
       }
+    },
+
+    //在request中获取值
+    * checkboxSingle({payload},{select,call,put}){
+        let data = yield call(checkboxSingle,payload);
+        //测试数组
+        // let data = yield call(checkboxMultiply,payload);
+        if(data.success){
+          message.success('checkbox 查询成功！');
+        }
     }
   },
 

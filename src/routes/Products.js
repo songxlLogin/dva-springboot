@@ -182,11 +182,11 @@ class Products extends React.Component {
     let that = this;
     let formData = new FormData();
     // 批量上传
-    // for(let item of fileList){
-    //   formData.append('files', item)
-    // }
+    for(let item of fileList){
+      formData.append('files', item)
+    }
     // 单个上传
-    formData.append('files', fileList[0]);
+    // formData.append('files', fileList[0]);
     formData.append("name",this.state.name);
     this.props.dispatch({
       type:'products/mockAddUser',
