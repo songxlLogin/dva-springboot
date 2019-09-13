@@ -113,6 +113,7 @@ class Products extends React.Component {
             </FormItem>
           </Form>
         </Modal>
+        <Button onClick={this.jumpFun}>跳转</Button>
       </div>
     )
   }
@@ -130,6 +131,14 @@ class Products extends React.Component {
         id: id
       }
     });
+  };
+
+  //跳转
+  jumpFun=()=>{
+    let name = '宋相磊'; //encodeURI(name)
+    let age = ['1','李四','c','王五'];
+    JSON.stringify(age);
+    window.location.href='http://127.0.0.1:8080/get/one?name='+encodeURI(encodeURI(name))+'&age='+age;
   };
 
   showModal = () => {
